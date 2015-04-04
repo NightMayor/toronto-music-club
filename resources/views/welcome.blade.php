@@ -41,7 +41,8 @@
 		<div class="container">
 			<div class="content">
 				<div class="title">Toronto Music Club</div>
-				<div class="quote">{{ Inspiring::quote() }}</div>
+				<!-- <div class="quote">{{ Inspiring::quote() }}</div> -->
+				<div class="quote">Beep Boop!</div>
 			</div>
 		</div>
 	</body>
