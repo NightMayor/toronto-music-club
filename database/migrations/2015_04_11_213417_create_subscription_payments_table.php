@@ -12,9 +12,14 @@ class CreateSubscriptionPaymentsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::table('subscription_payments', function(Blueprint $table)
+		Schema::create('subscription_payments', function(Blueprint $table)
 		{
-			//
+			$table->increments('id');
+			$table->integer('users_subscription_id')->unsigned();
+			$table->foreign('users_subscription_id')->references('id')->on('users_subscriptions');
+			$table->integer('amount_paid')->unsigned();
+			$table->timestamps();
+			$table->softDeletes();
 		});
 	}
 
@@ -25,10 +30,7 @@ class CreateSubscriptionPaymentsTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::table('subscription_payments', function(Blueprint $table)
-		{
-			//
-		});
+		Schema::dropIfExists('subscription_payments');
 	}
 
 }

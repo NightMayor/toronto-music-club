@@ -12,9 +12,14 @@ class CreateSubscriptionPricesTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::table('subscription_prices', function(Blueprint $table)
+		Schema::create('subscription_prices', function(Blueprint $table)
 		{
-			//
+			$table->increments('id');
+			$table->integer('subscription_id')->unsigned();
+			$table->foreign('subscription_id')->references('id')->on('subscriptions');
+			$table->integer('amount')->unsigned();
+			$table->timestamps();
+			$table->softDeletes();
 		});
 	}
 
@@ -25,10 +30,7 @@ class CreateSubscriptionPricesTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::table('subscription_prices', function(Blueprint $table)
-		{
-			//
-		});
+		Schema::dropIfExists('subscription_prices');
 	}
 
 }
