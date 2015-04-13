@@ -32,7 +32,7 @@ class CreateProfilesTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::dropIfExists();
+		Schema::dropIfExists('profiles');
 	}
 
 }
