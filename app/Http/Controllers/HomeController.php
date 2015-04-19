@@ -1,5 +1,8 @@
 <?php namespace App\Http\Controllers;
 
+use Auth;
+use App\User;
+
 class HomeController extends Controller {
 
 	/*
@@ -30,6 +33,14 @@ class HomeController extends Controller {
 	 */
 	public function index()
 	{
+		// $stuff = Auth::id();
+		// View::share('stuff', $stuff);
+
+		$user_id = Auth::id();
+		$user_info = User::find($user_id);
+		// dd($user_info);
+		view()->share('stuff', $user_info);
+
 		return view('home');
 	}
 
