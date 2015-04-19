@@ -11,6 +11,21 @@ class InstrumentsTableSeeder extends Seeder {
         DB::table('instruments')->delete();
 
         $instruments = [
+            [
+                'description' => 'Vocals'
+            ],
+            [
+                'description' => 'Bass guitar'
+            ],
+            [
+                'description' => 'Drum kit'
+            ],
+            [
+                'description' => 'Guitar'
+            ],
+            [
+                'description' => 'Piano (pianoforte)'
+            ],
         	[
                 'description' => 'Accordion'
             ],
@@ -145,9 +160,6 @@ class InstrumentsTableSeeder extends Seeder {
             ],
             [
                 'description' => 'Bass drum'
-            ],
-            [
-                'description' => 'Bass guitar'
             ],
             [
                 'description' => 'Bassoon'
@@ -414,9 +426,6 @@ class InstrumentsTableSeeder extends Seeder {
                 'description' => 'Doulophone/cuprophone'
             ],
             [
-                'description' => 'Drum kit'
-            ],
-            [
                 'description' => 'Drum machine'
             ],
             [
@@ -558,6 +567,9 @@ class InstrumentsTableSeeder extends Seeder {
                 'description' => 'Glasschord'
             ],
             [
+                'description' => 'Glockenspiel'
+            ],
+            [
                 'description' => 'Goblet drum'
             ],
             [
@@ -574,9 +586,6 @@ class InstrumentsTableSeeder extends Seeder {
             ],
             [
                 'description' => 'Guan'
-            ],
-            [
-                'description' => 'Guitar'
             ],
             [
                 'description' => 'Guitarra quinta huapanguera'
@@ -1035,9 +1044,6 @@ class InstrumentsTableSeeder extends Seeder {
                 'description' => 'Pavari'
             ],
             [
-                'description' => 'Piano (pianoforte)'
-            ],
-            [
                 'description' => 'Pibgorn'
             ],
             [
@@ -1234,6 +1240,9 @@ class InstrumentsTableSeeder extends Seeder {
             ],
             [
                 'description' => 'Setar (lute)'
+            ],
+            [
+                'description' => 'Shakers'
             ],
             [
                 'description' => 'Shakuhachi'

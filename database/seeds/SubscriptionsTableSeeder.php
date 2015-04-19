@@ -13,7 +13,7 @@ class SubscriptionsTableSeeder extends Seeder {
     	$subscriptions = [
     		[
                 'description'           => 'Basic',
-                'primary_instruments'   => 2,
+                'primary_instruments'   => 1,
                 'secondary_instruments' => 5,
                 'seeking_posts'         => 4,
                 'available_posts'       => 3,
