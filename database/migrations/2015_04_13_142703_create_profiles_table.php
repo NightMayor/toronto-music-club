@@ -12,17 +12,17 @@ class CreateProfilesTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('profiles', function(Blueprint $table)
-		{
-			$table->increments('id');
-			$table->integer('user_id')->unsigned();
-			$table->foreign('user_id')->references('id')->on('users');
-			$table->string('first_name');
-			$table->string('last_name');
-			$table->string('avatar')->nullable();
-			$table->timestamps();
-			$table->softDeletes();
-		});
+		// Schema::create('profiles', function(Blueprint $table)
+		// {
+		// 	$table->increments('id');
+		// 	$table->integer('user_id')->unsigned();
+		// 	$table->foreign('user_id')->references('id')->on('users');
+		// 	$table->string('first_name');
+		// 	$table->string('last_name');
+		// 	$table->string('avatar')->nullable();
+		// 	$table->timestamps();
+		// 	$table->softDeletes();
+		// });
 	}
 
 	/**
@@ -32,7 +32,7 @@ class CreateProfilesTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::dropIfExists('profiles');
+		// Schema::dropIfExists('profiles');
 	}
 
 }
