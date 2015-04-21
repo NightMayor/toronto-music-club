@@ -1,7 +1,11 @@
 <?php namespace App\Services;
 
-use App\User;
+use DB;
 use Validator;
+
+use App\User;
+use App\UsersSubscription;
+
 use Illuminate\Contracts\Auth\Registrar as RegistrarContract;
 
 class Registrar implements RegistrarContract {
@@ -29,11 +33,25 @@ class Registrar implements RegistrarContract {
 	 */
 	public function create(array $data)
 	{
-		return User::create([
-			'name' => $data['name'],
-			'email' => $data['email'],
-			'password' => bcrypt($data['password']),
-		]);
+		$user_info = DB::transaction(function($data) use ($data)
+		{
+			// create the new user
+			$user = User::create([
+				'name'     => $data['name'],
+				'email'    => $data['email'],
+				'password' => bcrypt($data['password']),
+			]);
+
+			// create the new users subscription (default 1 for Basic)
+			$user_subscription                  = new UsersSubscription();
+			$user_subscription->user_id         = $user->id;
+			$user_subscription->subscription_id = 1;
+			$user_subscription->save();
+
+			return $user;
+		});
+
+		return $user_info;
 	}
 
 }
