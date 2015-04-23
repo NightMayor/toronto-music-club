@@ -12,9 +12,9 @@ class Responder {
 		}
 
 		$response = [
-			'error' => false,
+			'error'   => false,
 			'message' => $message,
-			'data' => $data,
+			'data'    => $data,
 		];
 
 		return new JsonResponse($response, $status, $headers, $options);
@@ -23,7 +23,7 @@ class Responder {
 	public static function successMessage($message = 'Success', $status = 200, array $headers = array(), $options = 0)
 	{
 		$response = [
-			'error' => false,
+			'error'   => false,
 			'message' => $message,
 		];
 
@@ -38,9 +38,9 @@ class Responder {
 		}
 
 		$response = [
-			'error' => true,
+			'error'   => true,
 			'message' => $message,
-			'data' => $data,
+			'data'    => $data,
 		];
 
 		return new JsonResponse($response, $status, $headers, $options);
@@ -49,7 +49,7 @@ class Responder {
 	public static function failureMessage($message = 'Error', $status = 200, array $headers = array(), $options = 0)
 	{
 		$response = [
-			'error' => true,
+			'error'   => true,
 			'message' => $message,
 		];
 
