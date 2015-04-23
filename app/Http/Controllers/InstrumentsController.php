@@ -1,11 +1,10 @@
 <?php namespace App\Http\Controllers;
 
-use Auth;
-
+use App\Instrument;
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Services\Responder as Responder;
 
 class InstrumentsController extends Controller {
 
@@ -16,12 +15,13 @@ class InstrumentsController extends Controller {
 	 */
 	public function index()
 	{
-		$user_id = Auth::id();
+		$instruments = Instrument::all();
 
-		if (Auth::guest()) {
-			dd('Not logged in');
-		}
-		dd('What what in the butt?! ' . $user_id);
+		$data = [
+			'instruments' => $instruments,
+		];
+
+		return Responder::success($data);
 	}
 
 	/**
