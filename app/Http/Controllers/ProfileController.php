@@ -1,9 +1,13 @@
 <?php namespace App\Http\Controllers;
 
+use Auth;
+use Cache;
+use Exception;
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
+use App\Services\ProfileService;
+use App\Http\Controllers\Controller;
+use App\Services\Responder as Responder;
 
 class ProfileController extends Controller {
 
@@ -14,7 +18,13 @@ class ProfileController extends Controller {
 	 */
 	public function index()
 	{
-		//
+		try {
+			// get logged in users profile info
+			$profile = ProfileService::getProfileById(Auth::id());
+			return Responder::success($profile, 'Here is your user');
+		} catch (Exception $e) {
+			return Responder::failureMessage('Error: ' . $e->getMessage());
+		}
 	}
 
 	/**

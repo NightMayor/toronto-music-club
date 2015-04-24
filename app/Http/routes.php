@@ -19,6 +19,7 @@ Route::group([
 	'middleware' => 'auth',
 	], function() {
 		resource('instruments', 'InstrumentsController');
+		resource('profile', 'ProfileController');
 	}
 );
 
