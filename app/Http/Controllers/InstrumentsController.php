@@ -1,9 +1,11 @@
 <?php namespace App\Http\Controllers;
 
+use Exception;
 use App\Instrument;
 use App\Http\Requests;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Services\InstrumentsService;
 use App\Services\Responder as Responder;
 
 class InstrumentsController extends Controller {
@@ -15,13 +17,17 @@ class InstrumentsController extends Controller {
 	 */
 	public function index()
 	{
-		$instruments = Instrument::all();
+		try {
+			$instruments = InstrumentsService::getAllInstruments();
 
-		$data = [
-			'instruments' => $instruments,
-		];
+			$data = [
+				'instruments' => $instruments,
+			];
 
-		return Responder::success($data);
+			return Responder::success($data);
+		} catch (Exception $e) {
+			return Responder::failureMessage('Error: Could not retrieve intruments');
+		}
 	}
 
 	/**

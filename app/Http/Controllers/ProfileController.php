@@ -20,8 +20,8 @@ class ProfileController extends Controller {
 	{
 		try {
 			// get logged in users profile info
-			$profile = ProfileService::getProfileById(Auth::id());
-			return Responder::success($profile, 'Here is your user');
+			$profile = ProfileService::getProfileByUserId(Auth::id());
+			return Responder::success($profile);
 		} catch (Exception $e) {
 			return Responder::failureMessage('Error: ' . $e->getMessage());
 		}

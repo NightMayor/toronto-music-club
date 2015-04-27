@@ -17,8 +17,8 @@ class CreateUsersInstrumentsTable extends Migration {
 			$table->increments('id');
 			$table->integer('user_id')->unsigned();
 			$table->foreign('user_id')->references('id')->on('users');
-			$table->integer('instruments_id')->unsigned();
-			$table->foreign('instruments_id')->references('id')->on('instruments');
+			$table->integer('instrument_id')->unsigned();
+			$table->foreign('instrument_id')->references('id')->on('instruments');
 			$table->tinyInteger('primary')->unsigned()->default(0);
 			$table->smallInteger('played_since')->unsigned();
 			$table->timestamps();
