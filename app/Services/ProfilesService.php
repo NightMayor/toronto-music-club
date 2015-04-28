@@ -4,11 +4,13 @@ use Cache;
 use App\User;
 use Exception;
 use App\Services\InstrumentsService;
+use App\Services\SubscriptionsService;
 
-class ProfileService {
+class ProfilesService {
 
 	public static function getProfileByUserId($user_id)
 	{
+		Cache::forget('profile_' . $user_id);
 		if (!Cache::has('profile_' . $user_id)) {
 			
 			// get user info
@@ -19,11 +21,14 @@ class ProfileService {
 				throw new Exception('User does not exist');
 			}
 
+			$user_subscription = SubscriptionsService::getSubscriptionByUserId($user_id);
+
 			$user_info = [
 				'user_id'      => $user->id,
 				'name'         => $user->name,
 				'email'        => $user->email,
 				'member_since' => $user->created_at->toDateTimeString(),
+				'account_type' => $user_subscription[0]->description,
 			];
 
 			// get users instruments

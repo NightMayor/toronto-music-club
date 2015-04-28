@@ -5,7 +5,7 @@ use Cache;
 use Exception;
 use App\Http\Requests;
 use Illuminate\Http\Request;
-use App\Services\ProfileService;
+use App\Services\ProfilesService;
 use App\Http\Controllers\Controller;
 use App\Services\Responder as Responder;
 
@@ -20,7 +20,7 @@ class ProfileController extends Controller {
 	{
 		try {
 			// get logged in users profile info
-			$profile = ProfileService::getProfileByUserId(Auth::id());
+			$profile = ProfilesService::getProfileByUserId(Auth::id());
 			return Responder::success($profile);
 		} catch (Exception $e) {
 			return Responder::failureMessage('Error: ' . $e->getMessage());

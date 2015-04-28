@@ -1,10 +1,12 @@
 <?php namespace App\Services;
 
 use DB;
+use Input;
 use Cache;
 use Exception;
 use App\Instrument;
 use App\UsersInstrument;
+use App\Services\SubscriptionsService;
 
 class InstrumentsService {
 
@@ -41,7 +43,7 @@ class InstrumentsService {
 			// label them as either primary or secondary instruments
 			switch ($users_instrument->primary) {
 				case 1:
-					$instruments['primary'] = $users_instrument;
+					$instruments['primary'][] = $users_instrument;
 					break;
 				
 				default:
@@ -51,5 +53,59 @@ class InstrumentsService {
 		}
 
 		return $instruments;
+	}
+
+	public static function updateUsersInstruments($user_id)
+	{
+		$new_primary = [];
+		$new_secondary = [];
+
+		// make sure input is array
+		if (is_array(Input::get('primary'))) {
+			$new_primary = Input::get('primary');
+		}
+
+		// make sure input is array
+		if (is_array(Input::get('secondary'))) {
+			$new_secondary = Input::get('secondary');
+		}
+		
+		var_dump($new_primary);
+		var_dump($new_secondary);
+
+		// get users subscription
+		$users_subscription = SubscriptionsService::getSubscriptionByUserId($user_id);
+
+		// make sure they are not over their primary limit
+		if (count($new_primary) > $users_subscription[0]->primary_instruments){
+			throw new Exception('Too many Primary Instruments selected. You are allowed to have ' . $users_subscription[0]->primary_instruments);
+		}
+
+		// make sure they are not over their secondary limit
+		if (count($new_secondary) > $users_subscription[0]->secondary_instruments){
+			throw new Exception('Too many Secondary Instruments selected. You are allowed to have ' . $users_subscription[0]->secondary_instruments);
+		}
+
+		// make sure there are no instruments as both primary and secondary
+		foreach ($new_primary as $primary_id) {
+			if (in_array($primary_id, $new_secondary)) {
+				throw new Exception('You may not have instruments as both Primary and Secondary Instruments');
+			}
+		}
+
+		// make sure there are no repeated primary instruments
+		if (count($new_primary) != count(array_unique($new_primary))){
+			throw new Exception('You may not have duplicate Primary Instruments');
+		}
+
+		// make sure there are no repeated secondary instruments
+		if (count($new_secondary) != count(array_unique($new_secondary))){
+			throw new Exception('You may not have duplicate Secondary Instruments');
+		}
+		
+		// get the users current instruments
+		$users_instruments = InstrumentsService::getUsersInstruments($user_id);
+
+		dd($users_instruments);
 	}
 }

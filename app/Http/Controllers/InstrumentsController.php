@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 
+use Auth;
 use Exception;
 use App\Instrument;
 use App\Http\Requests;
@@ -47,7 +48,13 @@ class InstrumentsController extends Controller {
 	 */
 	public function store()
 	{
-		//
+		try {
+			InstrumentsService::UpdateUsersInstruments(Auth::id());
+
+			return Responder::successMessage('Success: Your instruments have been updated');
+		} catch (Exception $e) {
+			return Responder::failureMessage('Error: ' . $e->getMessage());
+		}
 	}
 
 	/**
