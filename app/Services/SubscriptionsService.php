@@ -4,7 +4,6 @@ use DB;
 use Exception;
 use App\User;
 use App\Subscription;
-use App\UsersSubscription;
 
 class SubscriptionsService {
 
