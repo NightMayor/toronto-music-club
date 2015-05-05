@@ -1,8 +1,8 @@
 <?php namespace App\Services;
 
 use DB;
-use Exception;
 use App\User;
+use Exception;
 use App\Subscription;
 
 class SubscriptionsService {
@@ -18,8 +18,7 @@ class SubscriptionsService {
 	}
 
 	public static function getSubscriptionByUserId($user_id)
-	{
-			
+	{	
 		// get user info
 		$user = User::find($user_id);
 		

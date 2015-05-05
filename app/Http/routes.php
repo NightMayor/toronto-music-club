@@ -20,6 +20,8 @@ Route::group([
 	], function() {
 		resource('instruments', 'InstrumentsController');
 		resource('profile', 'ProfileController');
+		resource('genders', 'GendersController');
+		resource('subscriptions', 'SubscriptionsController');
 	}
 );
 

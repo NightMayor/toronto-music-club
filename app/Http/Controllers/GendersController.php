@@ -1,15 +1,13 @@
 <?php namespace App\Http\Controllers;
 
-use Auth;
 use Exception;
-use App\Instrument;
 use App\Http\Requests;
 use Illuminate\Http\Request;
+use App\Services\GendersService;
 use App\Http\Controllers\Controller;
-use App\Services\InstrumentsService;
 use App\Services\Responder as Responder;
 
-class InstrumentsController extends Controller {
+class GendersController extends Controller {
 
 	/**
 	 * Display a listing of the resource.
@@ -19,15 +17,15 @@ class InstrumentsController extends Controller {
 	public function index()
 	{
 		try {
-			$instruments = InstrumentsService::getAllInstruments();
+			$genders = GendersService::getAllGenders();
 
 			$data = [
-				'instruments' => $instruments,
+				'genders' => $genders,
 			];
 
 			return Responder::success($data);
 		} catch (Exception $e) {
-			return Responder::failureMessage('Error: Could not retrieve instruments');
+			return Responder::failureMessage('Error: Could not retrieve genders');
 		}
 	}
 
@@ -48,13 +46,7 @@ class InstrumentsController extends Controller {
 	 */
 	public function store()
 	{
-		try {
-			InstrumentsService::UpdateUsersInstruments(Auth::id());
-
-			return Responder::successMessage('Success: Your instruments have been updated');
-		} catch (Exception $e) {
-			return Responder::failureMessage('Error: ' . $e->getMessage());
-		}
+		//
 	}
 
 	/**
