@@ -44,7 +44,13 @@ class ProfileController extends Controller {
 	 */
 	public function store()
 	{
-		//
+		try {
+			ProfilesService::updateProfile(Auth::id());
+
+			return Responder::successMessage('Success: Your profile has been updated');
+		} catch (Exception $e) {
+			return Responder::failureMessage('Error: ' . $e->getMessage());
+		}
 	}
 
 	/**

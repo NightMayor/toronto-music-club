@@ -49,7 +49,7 @@ class InstrumentsController extends Controller {
 	public function store()
 	{
 		try {
-			InstrumentsService::UpdateUsersInstruments(Auth::id());
+			InstrumentsService::updateUsersInstruments(Auth::id());
 
 			return Responder::successMessage('Success: Your instruments have been updated');
 		} catch (Exception $e) {
