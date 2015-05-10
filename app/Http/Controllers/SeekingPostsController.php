@@ -4,11 +4,10 @@ use Auth;
 use Exception;
 use App\Http\Requests;
 use Illuminate\Http\Request;
-use App\Services\ProfilesService;
 use App\Http\Controllers\Controller;
 use App\Services\Responder as Responder;
 
-class ProfileController extends Controller {
+class SeekingPostsController extends Controller {
 
 	/**
 	 * Display a listing of the resource.
@@ -17,13 +16,7 @@ class ProfileController extends Controller {
 	 */
 	public function index()
 	{
-		try {
-			// get logged in users profile info
-			$profile = ProfilesService::getProfileByUserId(Auth::id());
-			return Responder::success($profile);
-		} catch (Exception $e) {
-			return Responder::failureMessage('Error: ' . $e->getMessage());
-		}
+		//
 	}
 
 	/**
@@ -43,13 +36,7 @@ class ProfileController extends Controller {
 	 */
 	public function store()
 	{
-		try {
-			ProfilesService::updateProfile(Auth::id());
-
-			return Responder::successMessage('Success: Your profile has been updated');
-		} catch (Exception $e) {
-			return Responder::failureMessage('Error: ' . $e->getMessage());
-		}
+		//
 	}
 
 	/**

@@ -22,6 +22,8 @@ Route::group([
 		resource('profile', 'ProfileController');
 		resource('genders', 'GendersController');
 		resource('subscriptions', 'SubscriptionsController');
+		resource('available-posts', 'AvailablePostsController');
+		resource('seeking-posts', 'SeekingPostsController');
 	}
 );
 
