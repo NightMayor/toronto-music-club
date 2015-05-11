@@ -13,7 +13,6 @@ class ProfilesService {
 
 	public static function getProfileByUserId($user_id)
 	{
-		// Cache::forget('profile_' . $user_id);
 		if (!Cache::has('profile_' . $user_id)) {
 			
 			// get user info

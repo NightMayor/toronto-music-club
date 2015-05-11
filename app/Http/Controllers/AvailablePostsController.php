@@ -38,8 +38,8 @@ class AvailablePostsController extends Controller {
 	public function store()
 	{
 		try {
+			// create a new Available Post by the logged in user
 			AvailablePostsService::createAvailablePost(Auth::id());
-
 			return Responder::successMessage('Success: Available Post created');
 		} catch (Exception $e) {
 			return Responder::failureMessage('Error: ' . $e->getMessage());
