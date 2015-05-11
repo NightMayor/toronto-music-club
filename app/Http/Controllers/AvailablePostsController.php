@@ -60,7 +60,23 @@ class AvailablePostsController extends Controller {
 	 */
 	public function show($id)
 	{
-		//
+		try {
+			switch ($id) {
+				case 'All':
+					// get all available posts
+					$available_posts = AvailablePostsService::getAllAvailablePosts();
+					break;
+				
+				default:
+					// get available posts by id provided
+					$available_posts = AvailablePostsService::getAvailablePostsByInstrumentId($id);
+					break;
+			}
+			// get all of the logged in users Available Posts
+			return Responder::success($available_posts);
+		} catch (Exception $e) {
+			return Responder::failureMessage('Error: ' . $e->getMessage());
+		}
 	}
 
 	/**

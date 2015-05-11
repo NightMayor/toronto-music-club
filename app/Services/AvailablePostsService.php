@@ -14,7 +14,26 @@ class AvailablePostsService {
 
 	public static function getAllAvailablePosts()
 	{
-		return true;
+		if (!Cache::has('available_posts_all')) {
+
+			// get all the available posts in descending id (newest to oldest) and convert it to an array
+			$available_posts = AvailablePost::orderBy('id', 'desc')
+				->get()
+				->toArray();
+
+			// cache all the available posts
+			Cache::put('available_posts_all', $available_posts, 20);
+		}
+
+		return Cache::get('available_posts_all');
+	}
+
+	public static function getAvailablePostsByInstrumentId($instrument_id)
+	{
+		// make sure id is numeric
+		if (!is_numeric($instrument_id)) {
+			throw new Exception('Invalid Instrument entered');
+		}
 	}
 
 	public static function getAvailablePostsByUserId($user_id)
@@ -33,8 +52,6 @@ class AvailablePostsService {
 			$users_available_posts = AvailablePost::where('user_id', $user_id)
 				->orderBy('id', 'desc')
 				->get();
-
-			// dd($users_available_posts);
 			
 			// initialize available posts array
 			$available_posts = [];
@@ -144,7 +161,7 @@ class AvailablePostsService {
 		}
 
 		// forget the all available posts cache
-		Cache::forget('available_posts_0');
+		Cache::forget('available_posts_all');
 
 		// forget the cache for this instruments available posts cache
 		Cache::forget('available_posts_' . $instrument->id);
