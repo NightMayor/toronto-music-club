@@ -17,7 +17,13 @@ class AvailablePostsController extends Controller {
 	 */
 	public function index()
 	{
-		//
+		try {
+			// get all of the logged in users Available Posts
+			$available_posts = AvailablePostsService::getAvailablePostsByUserId(Auth::id());
+			return Responder::success($available_posts);
+		} catch (Exception $e) {
+			return Responder::failureMessage('Error: ' . $e->getMessage());
+		}
 	}
 
 	/**

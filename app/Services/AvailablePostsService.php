@@ -19,15 +19,45 @@ class AvailablePostsService {
 
 	public static function getAvailablePostsByUserId($user_id)
 	{	
-		// get user info
-		$user = User::find($user_id);
-		
-		// if the user does not exist
-		if (!$user) {
-			throw new Exception('User does not exist');
+		if (!Cache::has('users_available_posts_' . $user_id)) {
+			
+			// get user info
+			$user = User::find($user_id);
+			
+			// if the user does not exist
+			if (!$user) {
+				throw new Exception('User does not exist');
+			}
+
+			// get all of the users active available posts
+			$users_available_posts = AvailablePost::where('user_id', $user_id)
+				->orderBy('id', 'desc')
+				->get();
+
+			// dd($users_available_posts);
+			
+			// initialize available posts array
+			$available_posts = [];
+
+			foreach ($users_available_posts as $post) {
+				// get the name of the instrument in question
+				$instrument = Instrument::find($post->instrument_id);
+
+				// format array for this post and add it to the users available posts
+				$available_posts[] = [
+					'id'          => $post->id,
+					'instrument'  => $instrument->description,
+					'created_at'  => $post->created_at->toDateTimeString(),
+					'title'       => $post->title,
+					'description' => $post->body,
+				];
+			}
+
+			// cache available posts info
+			Cache::put('users_available_posts_' . $user_id, $available_posts, 20);
 		}
 
-		return true;
+		return Cache::get('users_available_posts_' . $user_id);
 	}
 
 	public static function createAvailablePost($user_id)
