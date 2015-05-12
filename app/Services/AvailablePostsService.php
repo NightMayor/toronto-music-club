@@ -14,6 +14,7 @@ class AvailablePostsService {
 
 	public static function getAllAvailablePosts()
 	{
+		// if cache does not exist
 		if (!Cache::has('available_posts_all')) {
 
 			// get all the available posts in descending id (newest to oldest) and convert it to an array
@@ -25,6 +26,7 @@ class AvailablePostsService {
 			Cache::put('available_posts_all', $available_posts, 20);
 		}
 
+		// return info from cache
 		return Cache::get('available_posts_all');
 	}
 
@@ -34,10 +36,35 @@ class AvailablePostsService {
 		if (!is_numeric($instrument_id)) {
 			throw new Exception('Invalid Instrument entered');
 		}
+
+		// make sure this is a valid instrument id by trying to get instrument info
+		$instrument = Instrument::find($instrument_id);
+
+		// if instrument is invalid (could not be found)
+		if (!$instrument) {
+			throw new Exception('This instrument is not available for selection');
+		}
+
+		// if cache does not exist
+		if (!Cache::has('available_posts_' . $instrument_id)) {
+
+			// get all the available posts with this instrument id in descending id (newest to oldest) and convert it to an array
+			$available_posts = AvailablePost::where('instrument_id', $instrument_id)
+				->orderBy('id', 'desc')
+				->get()
+				->toArray();
+
+			// cache all the available posts
+			Cache::put('available_posts_' . $instrument_id, $available_posts, 20);
+		}
+
+		// return info from cache
+		return Cache::get('available_posts_' . $instrument_id);
 	}
 
 	public static function getAvailablePostsByUserId($user_id)
 	{	
+		// if cache does not exist
 		if (!Cache::has('users_available_posts_' . $user_id)) {
 			
 			// get user info
@@ -74,6 +101,7 @@ class AvailablePostsService {
 			Cache::put('users_available_posts_' . $user_id, $available_posts, 20);
 		}
 
+		// return info from cache
 		return Cache::get('users_available_posts_' . $user_id);
 	}
 
