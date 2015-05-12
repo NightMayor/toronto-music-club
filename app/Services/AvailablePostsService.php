@@ -1,6 +1,7 @@
 <?php namespace App\Services;
 
 use DB;
+use Auth;
 use Cache;
 use Input;
 use App\User;
@@ -42,7 +43,7 @@ class AvailablePostsService {
 
 		// if instrument is invalid (could not be found)
 		if (!$instrument) {
-			throw new Exception('This instrument is not available for selection');
+			throw new Exception('This Instrument is not available for selection');
 		}
 
 		// if cache does not exist
@@ -196,5 +197,42 @@ class AvailablePostsService {
 
 		// forget this users available posts
 		Cache::forget('users_available_posts_' . $user_id);
+	}
+
+	public static function deleteAvailablePostsByPostId($post_id)
+	{
+		// make sure post id is numeric
+		if (!is_numeric($post_id)) {
+			throw new Exception('Invalid Available Post');
+		}
+
+		// get this posts info
+		$available_post = AvailablePost::find($post_id);
+
+		// make sure the post exists (could be found)
+		if (!$available_post) {
+			throw new Exception('Could not find posting (perhaps it has already been deleted)');
+		}
+
+		// make sure post belongs to the logged in user
+		if (Auth::id() != $available_post->user_id) {
+			throw new Exception('This posting is not yours to delete');
+		}
+
+		// delete the current available post
+		try {
+			$available_post->delete();
+		} catch (Exception $e) {
+			throw new Exception('Could not delete Available Post');
+		}
+
+		// forget the all available posts cache
+		Cache::forget('available_posts_all');
+
+		// forget the cache for this instruments available posts cache
+		Cache::forget('available_posts_' . $available_post->instrument_id);
+
+		// forget this users available posts
+		Cache::forget('users_available_posts_' . $available_post->user_id);
 	}
 }

@@ -109,7 +109,13 @@ class AvailablePostsController extends Controller {
 	 */
 	public function destroy($id)
 	{
-		//
+		try {
+			// delete Available Post by the posts id
+			AvailablePostsService::deleteAvailablePostsByPostId($id);
+			return Responder::successMessage('Success: Available Post has been deleted');
+		} catch (Exception $e) {
+			return Responder::failureMessage('Error: ' . $e->getMessage());
+		}
 	}
 
 }
