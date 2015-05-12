@@ -72,7 +72,6 @@ class AvailablePostsController extends Controller {
 					$available_posts = AvailablePostsService::getAvailablePostsByInstrumentId($id);
 					break;
 			}
-			// get all of the logged in users Available Posts
 			return Responder::success($available_posts);
 		} catch (Exception $e) {
 			return Responder::failureMessage('Error: ' . $e->getMessage());
