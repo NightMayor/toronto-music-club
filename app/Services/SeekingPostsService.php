@@ -150,7 +150,7 @@ class SeekingPostsService {
 		// set title from input
 		$title = Input::get('title');
 
-		// make sure title is not greater than 500 characters
+		// make sure title is not greater than 50 characters
 		if (strlen($title) > 50) {
 			throw new Exception('Please limit your Seeking Post title to 50 characters');		
 		}

@@ -1,7 +1,12 @@
 <?php namespace App\Http\Controllers;
 
+use Auth;
+use Exception;
+
 use App\Http\Requests;
+use App\Services\ThreadsService;
 use App\Http\Controllers\Controller;
+use App\Services\Responder as Responder;
 
 use Illuminate\Http\Request;
 
@@ -34,7 +39,13 @@ class ThreadsController extends Controller {
 	 */
 	public function store()
 	{
-		//
+		try {
+			// create a new Thread by the logged in user
+			ThreadsService::createThread(Auth::id());
+			return Responder::successMessage('Success: Message Sent');
+		} catch (Exception $e) {
+			return Responder::failureMessage('Error: ' . $e->getMessage());
+		}
 	}
 
 	/**

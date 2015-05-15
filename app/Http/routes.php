@@ -24,6 +24,7 @@ Route::group([
 		resource('subscriptions', 'SubscriptionsController');
 		resource('available-posts', 'AvailablePostsController');
 		resource('seeking-posts', 'SeekingPostsController');
+		resource('threads', 'ThreadsController');
 	}
 );
 
