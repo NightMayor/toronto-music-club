@@ -2,12 +2,14 @@
 
 use Auth;
 use Exception;
+
 use App\Instrument;
 use App\Http\Requests;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\InstrumentsService;
 use App\Services\Responder as Responder;
+
+use Illuminate\Http\Request;
 
 class InstrumentsController extends Controller {
 

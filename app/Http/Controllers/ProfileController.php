@@ -2,11 +2,13 @@
 
 use Auth;
 use Exception;
+
 use App\Http\Requests;
-use Illuminate\Http\Request;
 use App\Services\ProfilesService;
 use App\Http\Controllers\Controller;
 use App\Services\Responder as Responder;
+
+use Illuminate\Http\Request;
 
 class ProfileController extends Controller {
 

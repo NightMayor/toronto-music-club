@@ -2,11 +2,13 @@
 
 use Auth;
 use Exception;
+
 use App\Http\Requests;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\AvailablePostsService;
 use App\Services\Responder as Responder;
+
+use Illuminate\Http\Request;
 
 class AvailablePostsController extends Controller {
 

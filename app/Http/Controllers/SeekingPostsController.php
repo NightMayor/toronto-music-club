@@ -2,11 +2,13 @@
 
 use Auth;
 use Exception;
+
 use App\Http\Requests;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\SeekingPostsService;
 use App\Services\Responder as Responder;
+
+use Illuminate\Http\Request;
 
 class SeekingPostsController extends Controller {
 
