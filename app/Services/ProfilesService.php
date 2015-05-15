@@ -2,8 +2,9 @@
 
 use Cache;
 use Input;
-use App\User;
 use Exception;
+
+use App\User;
 use App\Gender;
 use App\UserChangeLog;
 use App\Services\InstrumentsService;

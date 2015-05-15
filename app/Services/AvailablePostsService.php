@@ -4,8 +4,9 @@ use DB;
 use Auth;
 use Cache;
 use Input;
-use App\User;
 use Exception;
+
+use App\User;
 use App\Instrument;
 use App\AvailablePost;
 use App\UsersInstrument;

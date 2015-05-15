@@ -1,8 +1,9 @@
 <?php namespace App\Services;
 
 use DB;
-use App\User;
 use Exception;
+
+use App\User;
 use App\Subscription;
 
 class SubscriptionsService {

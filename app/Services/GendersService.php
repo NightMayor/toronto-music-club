@@ -1,8 +1,9 @@
 <?php namespace App\Services;
 
 use Cache;
-use App\User;
 use Exception;
+
+use App\User;
 use App\Gender;
 
 class GendersService {
