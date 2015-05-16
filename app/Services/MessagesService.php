@@ -1,6 +1,7 @@
 <?php namespace App\Services;
 
 use DB;
+use Cache;
 use Exception;
 
 use App\User;
@@ -51,13 +52,17 @@ class MessagesService {
 
 		try {
 			// create record of author in users_messages
-			$author_message             = new UsersMessage();
-			$author_message->user_id    = $user_id;
-			$author_message->message_id = $message->id;
+			$author_message               = new UsersMessage();
+			$author_message->user_id      = $user_id;
+			$author_message->message_id   = $message->id;
+			$author_message->message_read = 1;
 			$author_message->save();
 		} catch (Exception $e) {
 			throw new Exception('Could not create authors connection to message');
 		}
+
+		// forget authors thread cache
+		Cache::forget('threads_' . $user_id);
 
 		// loop through all the recipients and...
 		foreach ($recipients as $recipient) {
@@ -71,6 +76,9 @@ class MessagesService {
 				throw new Exception('Could not create recipients connection to message');
 				
 			}
+
+			// forget the recipients thread cache
+			Cache::forget('threads_' . $recipient);
 		}
 	}
 }

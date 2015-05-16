@@ -19,7 +19,13 @@ class ThreadsController extends Controller {
 	 */
 	public function index()
 	{
-		//
+		try {
+			// get all of the logged in users Threads
+			$threads = ThreadsService::getThreadsByUserId(Auth::id());
+			return Responder::success($threads);
+		} catch (Exception $e) {
+			return Responder::failureMessage('Error: ' . $e->getMessage());
+		}
 	}
 
 	/**
