@@ -101,10 +101,7 @@ class ThreadsService {
 			}
 
 			// create message
-			MessagesService::createMessage($thread->id, $user_id, $recipients, $body);
-
-			throw new Exception('butts');
-			
+			MessagesService::createMessage($thread->id, $user_id, $recipients, $body);			
 		});
 
 		// dd(Input::get('recipient'));

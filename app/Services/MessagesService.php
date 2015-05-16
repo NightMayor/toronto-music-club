@@ -6,6 +6,7 @@ use Exception;
 use App\User;
 use App\Thread;
 use App\Message;
+use App\UsersMessage;
 
 class MessagesService {
 
@@ -46,6 +47,30 @@ class MessagesService {
 			$message->save();
 		} catch (Exception $e) {
 			throw new Exception('Could not create message');
+		}
+
+		try {
+			// create record of author in users_messages
+			$author_message             = new UsersMessage();
+			$author_message->user_id    = $user_id;
+			$author_message->message_id = $message->id;
+			$author_message->save();
+		} catch (Exception $e) {
+			throw new Exception('Could not create authors connection to message');
+		}
+
+		// loop through all the recipients and...
+		foreach ($recipients as $recipient) {
+			try {
+				// create record of recipient in users_messages
+				$recipient_message             = new UsersMessage();
+				$recipient_message->user_id    = $recipient;
+				$recipient_message->message_id = $message->id;
+				$recipient_message->save();
+			} catch (Exception $e) {
+				throw new Exception('Could not create recipients connection to message');
+				
+			}
 		}
 	}
 }
