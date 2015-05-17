@@ -66,19 +66,21 @@ class MessagesService {
 
 		// loop through all the recipients and...
 		foreach ($recipients as $recipient) {
-			try {
-				// create record of recipient in users_messages
-				$recipient_message             = new UsersMessage();
-				$recipient_message->user_id    = $recipient;
-				$recipient_message->message_id = $message->id;
-				$recipient_message->save();
-			} catch (Exception $e) {
-				throw new Exception('Could not create recipients connection to message');
-				
-			}
+			// after making sure the recipient is not the author
+			if ($recipient != $user_id) {
+				try {
+					// create record of recipient in users_messages
+					$recipient_message             = new UsersMessage();
+					$recipient_message->user_id    = $recipient;
+					$recipient_message->message_id = $message->id;
+					$recipient_message->save();
+				} catch (Exception $e) {
+					throw new Exception('Could not create recipients connection to message');
+				}
 
-			// forget the recipients thread cache
-			Cache::forget('threads_' . $recipient);
+				// forget the recipients thread cache
+				Cache::forget('threads_' . $recipient);	
+			}
 		}
 	}
 }

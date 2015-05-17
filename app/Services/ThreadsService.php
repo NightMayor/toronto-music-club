@@ -8,12 +8,14 @@ use Exception;
 use App\User;
 use App\Thread;
 use App\UsersThread;
+use App\UsersMessage;
 use App\Services\MessagesService;
 
 class ThreadsService {
 
 	public static function getThreadsByUserId($user_id)
 	{
+		Cache::forget('threads_' . $user_id);
 		// if cache does not exist
 		if (!Cache::has('threads_' . $user_id)) {
 
@@ -68,8 +70,8 @@ class ThreadsService {
 					'active'             => $users_thread->active,
 					'subject'            => $users_thread->subject,
 					'thread_began'       => $users_thread->created_at,
-					'other_participants' => $other_participants,
 					'new_message'        => $new_message,
+					'other_participants' => $other_participants,
 					'messages'           => $users_messages,
 				];
 				
@@ -86,7 +88,7 @@ class ThreadsService {
 			}
 
 			// cache all the threads info
-			Cache::put('threads_' . $user_id, $threads);
+			Cache::put('threads_' . $user_id, $threads, 20);
 		}
 
 		// return info from cache
@@ -95,14 +97,6 @@ class ThreadsService {
 
 	public static function createThread($user_id)
 	{
-		// get user info
-		$user = User::find($user_id);
-		
-		// if the user does not exist
-		if (!$user) {
-			throw new Exception('User does not exist');
-		}
-
 		// make sure subject of the thread was sent
 		if (!Input::has('subject')) {
 			throw new Exception('Your message must have a subject');
@@ -126,7 +120,6 @@ class ThreadsService {
 
 		// loop through all the recipients and...
 		foreach ($recipients as $recipient) {
-
 			// make sure every recipient is numeric
 			if (!is_numeric($recipient)) {
 				throw new Exception('Invalid recipient');
@@ -170,19 +163,79 @@ class ThreadsService {
 
 			// loop through all the recipients and...
 			foreach ($recipients as $recipient) {
-				try {
-					// create record of recipient in users_threads
-					$recipient_thread            = new UsersThread();
-					$recipient_thread->user_id   = $recipient;
-					$recipient_thread->thread_id = $thread->id;
-					$recipient_thread->save();
-				} catch (Exception $e) {
-					throw new Exception('Could not create recipients connection to conversation');
+
+				// make sure the recipient is not the author
+				if ($recipient != $user_id) {
+					try {
+						// create record of recipient in users_threads
+						$recipient_thread            = new UsersThread();
+						$recipient_thread->user_id   = $recipient;
+						$recipient_thread->thread_id = $thread->id;
+						$recipient_thread->save();
+					} catch (Exception $e) {
+						throw new Exception('Could not create recipients connection to conversation');
+					}
 				}
 			}
 
 			// create message (users threads caches are deleted in createMessage)
 			MessagesService::createMessage($thread->id, $user_id, $recipients, $body);			
+		});
+	}
+
+	public static function replyMessage($user_id, $thread_id)
+	{
+		// make sure message body was sent
+		if (!Input::has('body')) {
+			throw new Exception('The body of your message may not be blank');
+		}
+
+		// set body from input
+		$body = Input::get('body');
+
+		// make sure body is not greater than 1024 characters
+		if (strlen($body) > 1024) {
+			throw new Exception('Please limit the body of your message to 1024 characters (it currently has ' . strlen($body) . ')');		
+		}
+
+		// get record of this user belonging to this thread
+		$users_thread = UsersThread::where('user_id', $user_id)
+			->where('thread_id', $thread_id)
+			->first();
+
+		// make sure user should be seeing this thread
+		if (!$users_thread) {
+			throw new Exception('This conversation is not yours to respond to');
+		}
+
+		// get list of recipients
+		$recipients = UsersThread::where('thread_id', $thread_id)
+			->lists('user_id');
+
+		// create a transaction to wrap the creation of Message, and UsersMessage
+		DB::transaction(function() use ($user_id, $thread_id, $recipients, $body)
+		{
+			// make sure any messages in this thread are marked as read by the author 
+			$unread_messages = DB::table('messages')
+				->join('users_messages', 'messages.id', '=', 'users_messages.message_id')
+				->select('users_messages.id as users_message_id')
+				->where('users_messages.user_id', $user_id)
+				->where('users_messages.message_read', 0)
+				->where('messages.thread_id', $thread_id)
+				->lists('users_message_id');
+
+			// loop through any found to not be read
+			foreach ($unread_messages as $unread_message) {
+				// get record of users message
+				$users_message = UsersMessage::find($unread_message);
+				
+				// mark users message as read
+				$users_message->message_read = 1;
+				$users_message->save();
+			}
+
+			// create message (users threads caches are deleted in createMessage)
+			MessagesService::createMessage($thread_id, $user_id, $recipients, $body);					
 		});
 	}
 }

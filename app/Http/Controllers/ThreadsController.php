@@ -84,7 +84,13 @@ class ThreadsController extends Controller {
 	 */
 	public function update($id)
 	{
-		//
+		try {
+			// create a new Message within an existing Thread by the logged in user
+			ThreadsService::replyMessage(Auth::id(), $id);
+			return Responder::successMessage('Success: Message Sent');
+		} catch (Exception $e) {
+			return Responder::failureMessage('Error: ' . $e->getMessage());
+		}
 	}
 
 	/**
