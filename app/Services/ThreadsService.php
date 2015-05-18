@@ -1,6 +1,7 @@
 <?php namespace App\Services;
 
 use DB;
+use Auth;
 use Input;
 use Cache;
 use Exception;
@@ -15,7 +16,6 @@ class ThreadsService {
 
 	public static function getThreadsByUserId($user_id)
 	{
-		Cache::forget('threads_' . $user_id);
 		// if cache does not exist
 		if (!Cache::has('threads_' . $user_id)) {
 
@@ -28,7 +28,7 @@ class ThreadsService {
 			// get all threads user belongs to
 			$users_threads = DB::table('threads')
 				->join('users_threads', 'threads.id', '=', 'users_threads.thread_id')
-				->select('threads.*', 'users_threads.active')
+				->select('threads.*', 'users_threads.active', 'users_threads.id as users_thread_id')
 				->where('users_threads.user_id', $user_id)
 				->whereNull('threads.deleted_at')
 				->whereNull('users_threads.deleted_at')
@@ -67,6 +67,7 @@ class ThreadsService {
 
 				// create array of all the treads info
 				$thread_info = [
+					'users_thread_id'    => $users_thread->users_thread_id,
 					'active'             => $users_thread->active,
 					'subject'            => $users_thread->subject,
 					'thread_began'       => $users_thread->created_at,
@@ -237,5 +238,37 @@ class ThreadsService {
 			// create message (users threads caches are deleted in createMessage)
 			MessagesService::createMessage($thread_id, $user_id, $recipients, $body);					
 		});
+	}
+
+	public static function deleteUsersThreadById($users_thread_id)
+	{
+		// make sure thread id is numeric
+		if (!is_numeric($users_thread_id)) {
+			throw new Exception('Invalid conversation');
+		}
+
+		// get this users thread
+		$users_thread = UsersThread::find($users_thread_id);
+
+		// make sure the thread exists (could be found)
+		if (!$users_thread) {
+			throw new Exception('Could not find conversation (perhaps it has already been deleted)');
+		}
+
+		// make sure this UsersThread belongs to logged in user
+		if (Auth::id() != $users_thread->user_id) {
+			throw new Exception('This conversation is not yours to delete');
+		}
+
+		// mark UsersThread as inactive
+		try {
+			$users_thread->active = 0;
+			$users_thread->save();
+		} catch (Exception $e) {
+			throw new Exception('Could not delete conversation');
+		}
+		
+		// forget cache of users threads
+		Cache::forget('threads_' . $users_thread->user_id);
 	}
 }

@@ -190,7 +190,7 @@ class SeekingPostsService {
 		Cache::forget('users_seeking_posts_' . $user_id);
 	}
 
-	public static function deleteSeekingPostsByPostId($post_id)
+	public static function deleteSeekingPostByPostId($post_id)
 	{
 		// make sure post id is numeric
 		if (!is_numeric($post_id)) {

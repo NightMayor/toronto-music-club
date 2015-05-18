@@ -101,7 +101,13 @@ class ThreadsController extends Controller {
 	 */
 	public function destroy($id)
 	{
-		//
+		try {
+			// delete users thread by id
+			ThreadsService::deleteUsersThreadById($id);
+			return Responder::successMessage('Success: Conversation has been moved to trash');
+		} catch (Exception $e) {
+			return Responder::failureMessage('Error: ' . $e->getMessage());
+		}
 	}
 
 }

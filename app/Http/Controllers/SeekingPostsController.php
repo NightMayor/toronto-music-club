@@ -112,7 +112,7 @@ class SeekingPostsController extends Controller {
 	{
 		try {
 			// delete Seeking Post by the posts id
-			SeekingPostsService::deleteSeekingPostsByPostId($id);
+			SeekingPostsService::deleteSeekingPostByPostId($id);
 			return Responder::successMessage('Success: Seeking Post has been deleted');
 		} catch (Exception $e) {
 			return Responder::failureMessage('Error: ' . $e->getMessage());
