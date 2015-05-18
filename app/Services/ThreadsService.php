@@ -199,16 +199,6 @@ class ThreadsService {
 			throw new Exception('Please limit the body of your message to 1024 characters (it currently has ' . strlen($body) . ')');		
 		}
 
-		// get record of this user belonging to this thread
-		$users_thread = UsersThread::where('user_id', $user_id)
-			->where('thread_id', $thread_id)
-			->first();
-
-		// make sure user should be seeing this thread
-		if (!$users_thread) {
-			throw new Exception('This conversation is not yours to respond to');
-		}
-
 		// get list of recipients
 		$recipients = UsersThread::where('thread_id', $thread_id)
 			->lists('user_id');

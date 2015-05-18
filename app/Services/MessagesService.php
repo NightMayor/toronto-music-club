@@ -7,6 +7,7 @@ use Exception;
 use App\User;
 use App\Thread;
 use App\Message;
+use App\UsersThread;
 use App\UsersMessage;
 
 class MessagesService {
@@ -27,6 +28,27 @@ class MessagesService {
 		// if the thread does not exist
 		if (!$thread) {
 			throw new Exception('Conversation does not exist');
+		}
+
+		// get authors connection to conversation
+		$users_thread = UsersThread::where('user_id', $user_id)
+			->where('thread_id', $thread_id)
+			->first();
+
+		// make sure author belongs in this conversation
+		if (!$users_thread) {
+			throw new Exception('This conversation is not yours to participate in');
+		}
+
+		// make sure conversation is active
+		if ($users_thread->active == 0) {
+			try {
+				// update authors conversation
+				$users_thread->active = 1;
+				$users_thread->save();
+			} catch (Exception $e) {
+				throw new Exception('Could not reactivate conversation for author');
+			}
 		}
 
 		// make sure there are recipients
@@ -68,6 +90,27 @@ class MessagesService {
 		foreach ($recipients as $recipient) {
 			// after making sure the recipient is not the author
 			if ($recipient != $user_id) {
+				// get recipients connection to conversation
+				$users_thread = UsersThread::where('user_id', $recipient)
+					->where('thread_id', $thread_id)
+					->first();
+
+				// make sure recipient belongs in this conversation
+				if (!$users_thread) {
+					throw new Exception('Recipient is not involved in this conversation');
+				}
+
+				// make sure conversation is active
+				if ($users_thread->active == 0) {
+					try {
+						// update recipients conversation
+						$users_thread->active = 1;
+						$users_thread->save();
+					} catch (Exception $e) {
+						throw new Exception('Could not reactivate conversation for recipient');
+					}
+				}
+				
 				try {
 					// create record of recipient in users_messages
 					$recipient_message             = new UsersMessage();
