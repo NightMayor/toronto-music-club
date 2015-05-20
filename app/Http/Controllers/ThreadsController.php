@@ -62,7 +62,13 @@ class ThreadsController extends Controller {
 	 */
 	public function show($id)
 	{
-		//
+		try {
+			// get thread info by users_thread id
+			$thread = ThreadsService::getThreadInfoByUsersThreadId($id, 1);
+			return Responder::success($thread);
+		} catch (Exception $e) {
+			return Responder::failureMessage('Error: ' . $e->getMessage());
+		}
 	}
 
 	/**

@@ -45,32 +45,42 @@ class ThreadsService {
 		return $threads;
 	}
 
-	public static function getThreadInfoByUsersThreadId($users_thread_id)
+	public static function getThreadInfoByUsersThreadId($users_thread_id, $reading = 0)
 	{
+		// get users thread
+		$users_thread = UsersThread::find($users_thread_id);
+
+		// make sure users thread can be found
+		if (!$users_thread) {
+			throw new Exception('Link to conversation could not be found');
+		}
+
+		// make sure this is the logged in users conversation
+		if (Auth::id() != $users_thread->user_id) {
+			throw new Exception('This is not your conversation');
+		}
+
+		// get thread
+		$thread = Thread::find($users_thread->thread_id);
+
+		// make sure this thread exists
+		if (!$thread) {
+			throw new Exception('Conversation does not exist');
+		}
+
+		// check to see if message is being read
+		if ($reading) {
+			
+			///////////////////////
+			//                   //
+			// YOU LEFT OFF HERE //
+			//                   //
+			///////////////////////
+		}
+
 		// if cache does not exist
 		if (!Cache::has('users_thread_' . $users_thread_id)) {
 			
-			// get users thread
-			$users_thread = UsersThread::find($users_thread_id);
-
-			// make sure users thread can be found
-			if (!$users_thread) {
-				throw new Exception('Link to conversation could not be found');
-			}
-
-			// make sure this is the logged in users conversation
-			if (Auth::id() != $users_thread->user_id) {
-				throw new Exception('This is not your conversation');
-			}
-
-			// get thread
-			$thread = Thread::find($users_thread->thread_id);
-
-			// make sure this thread exists
-			if (!$thread) {
-				throw new Exception('Conversation does not exist');
-			}
-
 			// get all messages that belong to this thread
 			$users_messages = DB::table('messages')
 				->join('users_messages', 'messages.id', '=', 'users_messages.message_id')
