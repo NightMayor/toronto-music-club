@@ -16,84 +16,108 @@ class ThreadsService {
 
 	public static function getThreadsByUserId($user_id)
 	{
+		// initialize threads array
+		$threads = [
+			'inbox' => [],
+			'trash' => [],
+		];
+
+		// get all threads user belongs to
+		$users_threads = UsersThread::where('user_id', $user_id)->get();
+
+		// loop through all of the users threads
+		foreach ($users_threads as $users_thread) {
+			// get thread info
+			$thread_info = ThreadsService::getThreadInfoByUsersThreadId($users_thread->id);
+			
+			// either store the thread in users inbox or trash
+			switch ($users_thread->active) {
+				case 1:
+					$threads['inbox'][] = $thread_info;
+					break;
+				
+				default:
+					$threads['trash'][] = $thread_info;
+					break;
+			}
+		}
+
+		return $threads;
+	}
+
+	public static function getThreadInfoByUsersThreadId($users_thread_id)
+	{
 		// if cache does not exist
-		if (!Cache::has('threads_' . $user_id)) {
+		if (!Cache::has('users_thread_' . $users_thread_id)) {
+			
+			// get users thread
+			$users_thread = UsersThread::find($users_thread_id);
 
-			// initialize threads array
-			$threads = [
-				'inbox' => [],
-				'trash' => [],
-			];
+			// make sure users thread can be found
+			if (!$users_thread) {
+				throw new Exception('Link to conversation could not be found');
+			}
 
-			// get all threads user belongs to
-			$users_threads = DB::table('threads')
-				->join('users_threads', 'threads.id', '=', 'users_threads.thread_id')
-				->select('threads.*', 'users_threads.active', 'users_threads.id as users_thread_id')
-				->where('users_threads.user_id', $user_id)
-				->whereNull('threads.deleted_at')
-				->whereNull('users_threads.deleted_at')
+			// make sure this is the logged in users conversation
+			if (Auth::id() != $users_thread->user_id) {
+				throw new Exception('This is not your conversation');
+			}
+
+			// get thread
+			$thread = Thread::find($users_thread->thread_id);
+
+			// make sure this thread exists
+			if (!$thread) {
+				throw new Exception('Conversation does not exist');
+			}
+
+			// get all messages that belong to this thread
+			$users_messages = DB::table('messages')
+				->join('users_messages', 'messages.id', '=', 'users_messages.message_id')
+				->join('users', 'messages.user_id', '=', 'users.id')
+				->select('messages.*', 'users.name', 'users_messages.message_read')
+				->where('users_messages.user_id', $users_thread->user_id)
+				->where('messages.thread_id', $thread->id)
+				->whereNull('messages.deleted_at')
+				->whereNull('users_messages.deleted_at')
 				->get();
 
-			// loop through all of the users threads
-			foreach ($users_threads as $users_thread) {
-				// get all messages that belong to this thread in 
-				$users_messages = DB::table('messages')
-					->join('users_messages', 'messages.id', '=', 'users_messages.message_id')
-					->join('users', 'messages.user_id', '=', 'users.id')
-					->select('messages.*', 'users.name', 'users_messages.message_read')
-					->where('users_messages.user_id', $user_id)
-					->where('messages.thread_id', $users_thread->id)
-					->whereNull('messages.deleted_at')
-					->whereNull('users_messages.deleted_at')
-					->get();
+			$new_message = 0;
 
-				$new_message = 0;
-
-				foreach ($users_messages as $users_message) {
-					// see if there are any unread messages
-					if ($users_message->message_read == 0) {
-						$new_message = 1;
-					}
-				}
-
-				// get a list of all participants (who aren't the logged in user)
-				$other_participants = DB::table('users_threads')
-					->join('users', 'users_threads.user_id', '=', 'users.id')
-					->select('users_threads.user_id','users.name')
-					->where('users_threads.thread_id', $users_thread->id)
-					->where('users.id', '!=', $user_id)
-					->whereNull('users_threads.deleted_at')
-					->get();
-
-				// create array of all the treads info
-				$thread_info = [
-					'users_thread_id'    => $users_thread->users_thread_id,
-					'active'             => $users_thread->active,
-					'subject'            => $users_thread->subject,
-					'thread_began'       => $users_thread->created_at,
-					'new_message'        => $new_message,
-					'other_participants' => $other_participants,
-					'messages'           => $users_messages,
-				];
-				
-				// either store the thread in users inbox or trash
-				switch ($users_thread->active) {
-					case 1:
-						$threads['inbox'][] = $thread_info;
-						break;
-					
-					default:
-						$threads['trash'][] = $thread_info;
-						break;
+			foreach ($users_messages as $users_message) {
+				// see if there are any unread messages
+				if ($users_message->message_read == 0) {
+					$new_message = 1;
 				}
 			}
 
+			// get a list of all participants (who aren't the logged in user)
+			$other_participants = DB::table('users_threads')
+				->join('users', 'users_threads.user_id', '=', 'users.id')
+				->select('users_threads.user_id','users.name')
+				->where('users_threads.thread_id', $thread->id)
+				->where('users.id', '!=', $users_thread->user_id)
+				->whereNull('users_threads.deleted_at')
+				->get();
+
+			// create array of all the treads info
+			$thread_info = [
+				'users_thread_id'    => $users_thread_id,
+				'active'             => $users_thread->active,
+				'subject'            => $thread->subject,
+				'thread_began'       => $thread->created_at->toDateTimeString(),
+				'new_message'        => $new_message,
+				'other_participants' => $other_participants,
+				'messages'           => $users_messages,
+			];
+			
+
 			// cache all the threads info
-			Cache::put('threads_' . $user_id, $threads, 20);
+			Cache::put('users_thread_' . $users_thread_id, $thread_info, 10080);
 		}
 
 		// return info from cache
-		return Cache::get('threads_' . $user_id);
+		return Cache::get('users_thread_' . $users_thread_id);
 	}
 
 	public static function createThread($user_id)
@@ -259,6 +283,6 @@ class ThreadsService {
 		}
 		
 		// forget cache of users threads
-		Cache::forget('threads_' . $users_thread->user_id);
+		Cache::forget('users_thread_' . $users_thread->id);
 	}
 }

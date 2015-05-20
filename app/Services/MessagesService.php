@@ -84,7 +84,7 @@ class MessagesService {
 		}
 
 		// forget authors thread cache
-		Cache::forget('threads_' . $user_id);
+		Cache::forget('users_thread_' . $users_thread->id);
 
 		// loop through all the recipients and...
 		foreach ($recipients as $recipient) {
@@ -122,7 +122,7 @@ class MessagesService {
 				}
 
 				// forget the recipients thread cache
-				Cache::forget('threads_' . $recipient);	
+				Cache::forget('users_thread_' . $users_thread->id);	
 			}
 		}
 	}
