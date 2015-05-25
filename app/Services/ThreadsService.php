@@ -45,8 +45,9 @@ class ThreadsService {
 		return $threads;
 	}
 
-	public static function getThreadInfoByUsersThreadId($users_thread_id, $reading = 0)
+	public static function getThreadInfoByUsersThreadId($users_thread_id, $mark_as_read = 0)
 	{
+		Cache::forget('users_thread_' . $users_thread_id);
 		// get users thread
 		$users_thread = UsersThread::find($users_thread_id);
 
@@ -68,36 +69,50 @@ class ThreadsService {
 			throw new Exception('Conversation does not exist');
 		}
 
-		// check to see if message is being read
-		if ($reading) {
-			
-			///////////////////////
-			//                   //
-			// YOU LEFT OFF HERE //
-			//                   //
-			///////////////////////
+		// check to see if message is being read for the first time
+		if ($mark_as_read == 1) {
+			// forget this users_thread cache
+			Cache::forget('users_thread_' . $users_thread_id);
 		}
 
 		// if cache does not exist
 		if (!Cache::has('users_thread_' . $users_thread_id)) {
-			
 			// get all messages that belong to this thread
 			$users_messages = DB::table('messages')
 				->join('users_messages', 'messages.id', '=', 'users_messages.message_id')
 				->join('users', 'messages.user_id', '=', 'users.id')
-				->select('messages.*', 'users.name', 'users_messages.message_read')
+				->select('messages.*', 'users.name', 'users_messages.message_read', 'users_messages.id as users_message_id')
 				->where('users_messages.user_id', $users_thread->user_id)
 				->where('messages.thread_id', $thread->id)
 				->whereNull('messages.deleted_at')
 				->whereNull('users_messages.deleted_at')
+				->orderBy('messages.created_at')
 				->get();
 
+			// set new message to 0 by default
 			$new_message = 0;
 
+			// loop through all messages that belong to this thread
 			foreach ($users_messages as $users_message) {
 				// see if there are any unread messages
-				if ($users_message->message_read == 0) {
-					$new_message = 1;
+				if ($users_message->message_read == 0) {			
+					// check to see if message is to be marked as read
+					switch ($mark_as_read) {
+						case 1:
+							// get this users message and update it to read
+							$current_users_message               = UsersMessage::find($users_message->users_message_id);
+							$current_users_message->message_read = 1;
+							$current_users_message->save();
+
+							// update the users message array to mark as read
+							$users_message->message_read = 1;
+							break;
+						
+						default:
+							// update the new message flag
+							$new_message = 1;
+							break;
+					}
 				}
 			}
 
@@ -121,7 +136,6 @@ class ThreadsService {
 				'messages'           => $users_messages,
 			];
 			
-
 			// cache all the threads info
 			Cache::put('users_thread_' . $users_thread_id, $thread_info, 10080);
 		}

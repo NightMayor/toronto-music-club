@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use Auth;
+use Input;
 use Exception;
 
 use App\Http\Requests;
@@ -63,8 +64,11 @@ class ThreadsController extends Controller {
 	public function show($id)
 	{
 		try {
+			// get 'mark as read' from URL parameter (?read=1)
+			$mark_as_read = Input::get('read');
+
 			// get thread info by users_thread id
-			$thread = ThreadsService::getThreadInfoByUsersThreadId($id, 1);
+			$thread = ThreadsService::getThreadInfoByUsersThreadId($id, $mark_as_read);
 			return Responder::success($thread);
 		} catch (Exception $e) {
 			return Responder::failureMessage('Error: ' . $e->getMessage());
