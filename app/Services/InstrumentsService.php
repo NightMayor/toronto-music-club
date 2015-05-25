@@ -15,7 +15,7 @@ class InstrumentsService {
 	{
 		if (!Cache::has('intruments_list')) {
 			$instruments = Instrument::all();
-			Cache::put('intruments_list', $instruments, 10);
+			Cache::put('intruments_list', $instruments, 10080);
 		}
 
 		return Cache::get('intruments_list');

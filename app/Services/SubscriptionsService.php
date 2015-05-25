@@ -12,7 +12,7 @@ class SubscriptionsService {
 	{
 		if (!Cache::has('subscription_list')) {
 			$subscriptions = Subscription::all();
-			Cache::put('subscription_list', $subscriptions, 10);
+			Cache::put('subscription_list', $subscriptions, 10080);
 		}
 
 		return Cache::get('subscription_list');

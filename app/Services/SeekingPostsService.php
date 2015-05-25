@@ -25,7 +25,7 @@ class SeekingPostsService {
 				->toArray();
 
 			// cache all the seeking posts
-			Cache::put('seeking_posts_all', $seeking_posts, 20);
+			Cache::put('seeking_posts_all', $seeking_posts, 10080);
 		}
 
 		// return info from cache
@@ -57,7 +57,7 @@ class SeekingPostsService {
 				->toArray();
 
 			// cache all the seeking posts
-			Cache::put('seeking_posts_' . $instrument_id, $seeking_posts, 20);
+			Cache::put('seeking_posts_' . $instrument_id, $seeking_posts, 10080);
 		}
 
 		// return info from cache
@@ -100,7 +100,7 @@ class SeekingPostsService {
 			}
 
 			// cache seeking posts info
-			Cache::put('users_seeking_posts_' . $user_id, $seeking_posts, 20);
+			Cache::put('users_seeking_posts_' . $user_id, $seeking_posts, 10080);
 		}
 
 		// return info from cache

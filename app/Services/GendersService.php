@@ -12,7 +12,7 @@ class GendersService {
 	{
 		if (!Cache::has('gender_list')) {
 			$genders = Gender::all();
-			Cache::put('gender_list', $genders, 10);
+			Cache::put('gender_list', $genders, 10080);
 		}
 
 		return Cache::get('gender_list');

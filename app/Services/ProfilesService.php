@@ -52,7 +52,7 @@ class ProfilesService {
 			];
 
 			// cache profile info
-			Cache::put('profile_' . $user_id, $profile, 20);
+			Cache::put('profile_' . $user_id, $profile, 10080);
 		}
 
 		return Cache::get('profile_' . $user_id);

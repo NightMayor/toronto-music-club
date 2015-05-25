@@ -25,7 +25,7 @@ class AvailablePostsService {
 				->toArray();
 
 			// cache all the available posts
-			Cache::put('available_posts_all', $available_posts, 20);
+			Cache::put('available_posts_all', $available_posts, 10080);
 		}
 
 		// return info from cache
@@ -57,7 +57,7 @@ class AvailablePostsService {
 				->toArray();
 
 			// cache all the available posts
-			Cache::put('available_posts_' . $instrument_id, $available_posts, 20);
+			Cache::put('available_posts_' . $instrument_id, $available_posts, 10080);
 		}
 
 		// return info from cache
@@ -100,7 +100,7 @@ class AvailablePostsService {
 			}
 
 			// cache available posts info
-			Cache::put('users_available_posts_' . $user_id, $available_posts, 20);
+			Cache::put('users_available_posts_' . $user_id, $available_posts, 10080);
 		}
 
 		// return info from cache
