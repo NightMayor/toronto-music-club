@@ -47,7 +47,6 @@ class ThreadsService {
 
 	public static function getThreadInfoByUsersThreadId($users_thread_id, $mark_as_read = 0)
 	{
-		Cache::forget('users_thread_' . $users_thread_id);
 		// get users thread
 		$users_thread = UsersThread::find($users_thread_id);
 
