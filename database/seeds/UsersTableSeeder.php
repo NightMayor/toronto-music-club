@@ -12,10 +12,11 @@ class UsersTableSeeder extends Seeder {
 
     	$users = [
     		[
-                'id'       => 100001,
-                'name'     => 'Test Tester',
-                'email'    => 'devinnewbery@hotmail.com',
-                'password' => '$2y$10$WIrulrMi1N0Ur9N.UsFDVeJPhhln.8TyLi7ct6qMPk42SGZSWG4Eq',
+                'id'        => 100001,
+                'name'      => 'Test Tester',
+                'email'     => 'devinnewbery@hotmail.com',
+                'password'  => '$2y$10$WIrulrMi1N0Ur9N.UsFDVeJPhhln.8TyLi7ct6qMPk42SGZSWG4Eq',
+                'gender_id' => 3,
     		],
     	];
 
